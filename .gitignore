@@ -1,0 +1,27 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Archivos de caché
+__pycache__/
+*.pyc
+
+# Configuración local e información sensible
+.env
+.env.local
+
+# Datos de la aplicación (para que otro usuario cree las suyas y no se suban los PDF del usuario)
+buzon_de_facturas/
+facturas_soportadas.xlsx
+# Archivos de sistema de Windows
+desktop.ini
+Thumbs.db
+
+
+# Archivos de compilación de PyInstaller
+build/
+dist/
+*.exe
+*.spec
