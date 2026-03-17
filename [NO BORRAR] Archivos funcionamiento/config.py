@@ -8,9 +8,12 @@ o defínela como variable de entorno para mayor seguridad:
 """
 
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="[API KEY].env")  # Carga variables desde el archivo [API KEY].env
+# Busca [API KEY].env en la misma carpeta que este archivo (independientemente del CWD)
+_BASE_DIR = Path(__file__).parent
+load_dotenv(dotenv_path=_BASE_DIR / "[API KEY].env")
 
 # ---------------------------------------------------------------------------
 # API KEY
@@ -32,8 +35,8 @@ GEMINI_MODEL: str = "gemini-3.1-flash-lite-preview"
 # ---------------------------------------------------------------------------
 # RUTAS
 # ---------------------------------------------------------------------------
-FACTURAS_DIR: str = "BUZON_DE_FACTURAS_SOPORTADAS"     # Carpeta donde dejar los PDFs
-OUTPUT_FILE: str  = "facturas_soportadas.xlsx"
+FACTURAS_DIR: str = str(_BASE_DIR.parent / "BUZON_DE_FACTURAS_SOPORTADAS")  # Carpeta PDFs (en raíz)
+OUTPUT_FILE: str  = str(_BASE_DIR.parent / "FACTURAS_SOPORTADAS.xlsx")       # Excel (en raíz)
 
 # ---------------------------------------------------------------------------
 # LÍMITES
