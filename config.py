@@ -10,7 +10,7 @@ o defínela como variable de entorno para mayor seguridad:
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Carga variables desde el archivo .env si existe
+load_dotenv(dotenv_path="[API KEY].env")  # Carga variables desde el archivo [API KEY].env
 
 # ---------------------------------------------------------------------------
 # API KEY
@@ -32,7 +32,7 @@ GEMINI_MODEL: str = "gemini-3.1-flash-lite-preview"
 # ---------------------------------------------------------------------------
 # RUTAS
 # ---------------------------------------------------------------------------
-FACTURAS_DIR: str = "buzon_de_facturas"                # Carpeta donde dejar los PDFs
+FACTURAS_DIR: str = "BUZON_DE_FACTURAS_SOPORTADAS"     # Carpeta donde dejar los PDFs
 OUTPUT_FILE: str  = "facturas_soportadas.xlsx"
 
 # ---------------------------------------------------------------------------

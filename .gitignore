@@ -9,11 +9,11 @@ __pycache__/
 *.pyc
 
 # Configuración local e información sensible
-.env
-.env.local
+[[]API KEY].env
+[[]API KEY].env.local
 
 # Datos de la aplicación (para que otro usuario cree las suyas y no se suban los PDF del usuario)
-buzon_de_facturas/
+BUZON_DE_FACTURAS_SOPORTADAS/
 facturas_soportadas.xlsx
 # Archivos de sistema de Windows
 desktop.ini

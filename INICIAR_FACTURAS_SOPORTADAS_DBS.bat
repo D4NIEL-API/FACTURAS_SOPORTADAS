@@ -1,7 +1,7 @@
 @echo off
-REM Script sencillo para ejecutar la aplicacion de extraccion de facturas
+REM Script sencillo para ejecutar Facturas Soportadas DBS
 
-echo Inicializando Extractor de Facturas...
+echo Inicializando Facturas Soportadas DBS...
 echo.
 
 REM Comprueba si existe el ejecutable compilado
