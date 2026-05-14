@@ -75,11 +75,20 @@ class LineaDetalle(BaseModel):
     CATEGORIA_CONTABLE: Optional[str] = Field(
         None,
         description=(
-            "Categoria contable/fiscal asignada automaticamente segun el tipo de concepto. "
-            "Ejemplos: 'Servicios Profesionales', 'Suministros', 'Licencias Informaticas', "
-            "'Alquiler', 'Publicidad y Marketing', 'Transporte y Mensajeria', "
-            "'Material de Oficina', 'Formacion', 'Mantenimiento y Reparaciones', "
-            "'Honorarios', 'Otros Gastos'. Elige la mas adecuada segun el texto del concepto."
+            "Clasificacion fiscal estricta del gasto para un profesional de la abogacia. "
+            "Elige OBLIGATORIAMENTE una de las siguientes categorias segun el concepto: "
+            "1. 'Servicios de Profesionales Independientes' (Minutas de procuradores, notarios, peritos, economistas). "
+            "2. 'Suscripciones y Bases de Datos' (Aranzadi, Tirant, vLex, Sepin, revistas juridicas). "
+            "3. 'Cuotas Colegiales y Mutualidad' (Cuotas del Colegio de Abogados, Mutualidad de la Abogacia, RETA). "
+            "4. 'Gastos de Desplazamiento y Locomocion' (Taxis a juzgados, billetes de tren/avion, parking, peajes). "
+            "5. 'Manutencion y Hosteleria' (Comidas con clientes o en desplazamientos profesionales, hoteles). "
+            "6. 'Suministros' (Telefonia movil, cuota de internet, luz y agua del despacho). "
+            "7. 'Arrendamientos y Canones' (Alquiler del local/despacho, renting de equipos o vehiculos). "
+            "8. 'Tributos y Tasas' (Tasas judiciales, IBI del local, tasas administrativas). "
+            "9. 'Seguros' (Responsabilidad Civil Profesional, seguro de accidentes/local). "
+            "10. 'Material de Oficina e Informatica' (Papeleria, toner, licencias de software, LexNET, certificados digitales). "
+            "11. 'Publicidad y Relaciones Publicas' (Diseno web, marketing juridico, atenciones a clientes). "
+            "12. 'Otros Gastos Deducibles' (Cualquier otro gasto afecto a la actividad que no encaje en las anteriores)."
         )
     )
 
@@ -107,7 +116,7 @@ class Factura(BaseModel):
         description=(
             "Lista de todos los conceptos o servicios facturados. "
             "Cada elemento es una linea independiente con su descripcion, "
-            "base imponible y categoria contable."
+            "base imponible y su categoria contable obligatoria."
         )
     )
 
@@ -141,8 +150,8 @@ COLUMNAS_EXCEL: list[str] = [
 # PROMPT MAESTRO
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT = """
-Eres un asistente experto en contabilidad y fiscalidad espanola.
-Tu unica tarea es extraer datos de facturas y devolverlos en formato JSON estructurado.
+Eres un asistente experto en contabilidad y fiscalidad espanola, especializado en despachos de abogados y profesionales juridicos autonomos.
+Tu unica tarea es extraer datos de facturas soportadas y devolverlos en formato JSON estructurado, asignando la categoria contable exacta.
 
 Reglas absolutas:
 - Solo devuelves el JSON. Sin explicaciones, sin markdown, sin texto extra.
@@ -152,17 +161,23 @@ Reglas absolutas:
 - Si un campo no aparece en la factura, devuelve null.
 - Para PAGADA usa: "Si", "No" o "Desconocido".
 - Las fechas deben tener formato DD/MM/AAAA siempre que sea posible.
-- EMITIDA es el nombre del emisor (quien envia la factura), RECEPTOR es quien la recibe.
+- EMITIDA es el nombre del emisor (quien envia la factura), RECEPTOR es quien la recibe (el abogado).
+
+Reglas de Categorizacion (Critico):
+- Analiza la descripcion del servicio en cada linea de la factura.
+- Asigna estricta y obligatoriamente una de las 12 categorias exactas enumeradas en la descripcion del campo CATEGORIA_CONTABLE. No inventes categorias nuevas.
+- Ejemplo 1: Si el concepto es "Suscripcion Base de Datos Aranzadi", la categoria es 'Suscripciones y Bases de Datos'.
+- Ejemplo 2: Si el concepto es "Minuta de Procurador Gomez", la categoria es 'Servicios de Profesionales Independientes'.
+- Ejemplo 3: Si el concepto es "Trayecto calle Princesa a Plaza de Castilla", la categoria es 'Gastos de Desplazamiento y Locomocion'.
+- Ejemplo 4: Si el concepto es "Cuota mensual Colegio de Abogados de Madrid", la categoria es 'Cuotas Colegiales y Mutualidad'.
+- Ejemplo 5: Si el concepto es "Licencia Microsoft 365", la categoria es 'Material de Oficina e Informatica'.
+- Ejemplo 6: Si el concepto es "Prima seguro responsabilidad civil", la categoria es 'Seguros'.
 
 Para el campo SERVICIOS:
 - Crea una entrada por cada linea de concepto o servicio distinto que aparezca en la factura.
 - Extrae el TIPO_IVA_PORCENTAJE (ej. 21.0) y TIPO_IRPF_PORCENTAJE (ej. 15.0) para la linea de detalle (escribe solo el numero, no el signo %).
 - Si solo hay un concepto global, crea una unica entrada.
 - En BASE_IMPONIBLE_LINEA pon el importe neto de ese concepto concreto (sin IVA ni IRPF).
-- En CATEGORIA_CONTABLE asigna la categoria contable mas adecuada segun el texto del concepto.
-  Usa categorias coherentes como: 'Servicios Profesionales', 'Honorarios', 'Licencias Informaticas',
-  'Suministros', 'Alquiler', 'Publicidad y Marketing', 'Transporte y Mensajeria',
-  'Material de Oficina', 'Formacion', 'Mantenimiento y Reparaciones', 'Otros Gastos'.
 - NUNCA dejes la lista SERVICIOS vacia. Si no hay desglose, pon un unico elemento con el total neto.
 """
 
